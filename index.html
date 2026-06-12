@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colheita Turbo - Drift na Fazenda</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #2F4F4F;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+        #game {
+            position: relative;
+            width: 400px;
+            height: 700px;
+            background: #8B4513;
+            border: 4px solid #1a1a1a;
+            overflow: hidden;
+        }
+        #pista {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(0deg, #A0522D 0px, #A0522D 40px, #8B4513 40px, #8B4513 80px),
+                repeating-linear-gradient(90deg, #A0522D 0px, #A0522D 40px, #8B4513 40px, #8B4513 80px);
+        }
+        #trator {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            font-size: 35px;
+            z-index: 20;
+            transition: transform 0.1s;
+        }
+       .soja {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            font-size: 22px;
+            z-index: 5;
+            animation: pulsar 1s infinite;
+        }
+        @keyframes pulsar {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+       .obstaculo {
+            position: absolute;
+            font-size: 40px;
+            z-index: 10;
+        }
+       .rastro {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(139, 69, 19, 0.5);
+            border-radius: 50%;
+            z-index: 1;
+        }
+        #hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 2px 2px #000;
+            z-index: 30;
+        }
+        #tempo-bar {
+            position: absolute;
+            top: 40px;
+            left: 10px;
+            right: 10px;
+            height: 20px;
+            background: #333;
+            border: 2px solid #fff;
+            z-index: 30;
+        }
+        #tempo-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF0000, #FFD700, #00FF00);
+            width: 100%;
+            transition: width 0.1s;
+        }
+        #velocimetro {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px #000;
+            z-index: 30;
+        }
+        #tela-inicio, #tela-gameover {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 40;
+            padding: 20px;
+        }
+        #tela-gameover { display: none; }
+        button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-family: inherit;
+            background: #FFD700;
+            border: 3px solid #333;
+            cursor: pointer;
+        }
+       .controles {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            padding: 0 20px;
+            z-index: 30;
+        }
+       .btn {
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border: 3px solid #fff;
+            border-radius: 10px;
+            font-size: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+       .btn:active { background: rgba(255,255,255,0.5); }
+        #acelerar { grid-column: 2; }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <div id="pista"></div>
+        
+        <div id="hud">
+            <div>Sacas: <span id="sacas">0</span></div>
+            <div>Recorde: <span id="recorde">0</span></div>
+        </div>
+        <div id="tempo-bar"><div id="tempo-fill"></div></div>
+        <div id="velocimetro"><span id="vel">0</span> km/h</div>
+        
+        <div id="trator">🚜</div>
+
+        <div class="controles">
+            <div class="btn" id="esquerda">⬅️</div>
+            <div class="btn" id="acelerar">⬆️</div>
+            <div class="btn" id="direita">➡️</div>
+        </div>
+
+        <div id="tela-inicio">
+            <h1>Colheita Turbo</h1>
+            <p style="margin: 20px 0;">Drift na fazenda pra colher<br>soja antes do tempo acabar!</p>
+            <p>Setas/WASD ou botões<br>Cada soja = +1s de tempo</p>
+            <button onclick="iniciarJogo()">Ligar Tr
